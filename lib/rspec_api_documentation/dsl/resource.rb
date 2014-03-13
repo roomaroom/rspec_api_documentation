@@ -9,6 +9,7 @@ module RspecApiDocumentation::DSL
           options[:method] = method
           options[:route] = args.first
           options[:api_doc_dsl] = :endpoint
+          options[:descriptionf] = "afdsfasdfsdf"
           args.push(options)
           args[0] = "#{method.to_s.upcase} #{args[0]}"
           context(*args, &block)
@@ -43,6 +44,18 @@ module RspecApiDocumentation::DSL
 
       def header(name, value)
         headers[name] = value
+      end
+
+      def descriptionf(text)
+        example.metadata[:descriptionf] = text
+      end
+
+      def root_path(path)
+        metadata[:root_path] = path
+        if superclass_metadata && metadata[:root_path].equal?(superclass_metadata[:root_path])
+          metadata[:root_path] = Marshal.load(Marshal.dump(superclass_metadata[:root_path]))
+        end
+        metadata[:root_path]
       end
 
       private

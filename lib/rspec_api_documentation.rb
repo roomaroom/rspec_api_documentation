@@ -33,6 +33,7 @@ module RspecApiDocumentation
     autoload :HtmlWriter
     autoload :TextileWriter
     autoload :JsonWriter
+    autoload :JsonSwaggerWriter
     autoload :AppendJsonWriter
     autoload :JsonIodocsWriter
     autoload :IndexHelper
