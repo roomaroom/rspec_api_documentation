@@ -9,6 +9,7 @@ module RspecApiDocumentation::DSL
           options[:method] = method
           options[:route] = args.first
           options[:api_doc_dsl] = :endpoint
+          options[:descriptionf] = "afdsfasdfsdf"
           args.push(options)
           args[0] = "#{method.to_s.upcase} #{args[0]}"
           context(*args, &block)
@@ -41,8 +42,37 @@ module RspecApiDocumentation::DSL
         parameters.push(options.merge(:name => name.to_s, :description => description))
       end
 
+      def modified_root_path(path)
+        metadata[:modified_root_path] = path
+        if superclass_metadata && metadata[:modified_root_path].equal?(superclass_metadata[:modified_root_path])
+          metadata[:modified_root_path] = Marshal.load(Marshal.dump(superclass_metadata[:modified_root_path]))
+        end
+        metadata[:modified_root_path]
+      end
+
       def header(name, value)
         headers[name] = value
+      end
+
+      def descriptionf(text)
+        example.metadata[:descriptionf] = text
+      end
+
+      def example(title, params={}, &block)
+        metadata[:mute] = !!params[:mute]
+        if superclass_metadata && metadata[:mute].equal?(superclass_metadata[:mute])
+          metadata[:mute] = Marshal.load(Marshal.dump(superclass_metadata[:mute]))
+        end
+
+        super title, &block
+      end
+
+      def root_path(path)
+        metadata[:root_path] = path
+        if superclass_metadata && metadata[:root_path].equal?(superclass_metadata[:root_path])
+          metadata[:root_path] = Marshal.load(Marshal.dump(superclass_metadata[:root_path]))
+        end
+        metadata[:root_path]
       end
 
       private
