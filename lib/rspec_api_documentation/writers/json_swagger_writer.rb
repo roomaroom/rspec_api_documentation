@@ -115,6 +115,7 @@ module RspecApiDocumentation
           type:       resource_name,
           summary:    description,
           nickname:   "#{http_method}#{resource_name}",
+          notes:      ( notes if respond_to?(:notes) ),
           parameters: respond_to?(:parameters) ? formatted_parameters : [],
           responseMessages: []
         }
