@@ -58,6 +58,14 @@ module RspecApiDocumentation::DSL
         example.metadata[:descriptionf] = text
       end
 
+      def example_response(response = {})
+        metadata[:example_response] = response
+        if superclass_metadata && metadata[:example_response].equal?(superclass_metadata[:example_response])
+          metadata[:example_response] = Marshal.load(Marshal.dump(superclass_metadata[:example_response]))
+        end
+        metadata[:example_response]
+      end
+
       def example(title, params={}, &block)
         metadata[:mute] = !!params[:mute]
         if superclass_metadata && metadata[:mute].equal?(superclass_metadata[:mute])
