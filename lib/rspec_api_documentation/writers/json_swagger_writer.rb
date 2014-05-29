@@ -111,12 +111,13 @@ module RspecApiDocumentation
 
       def as_json(opts = nil)
         {
-          method:     http_method,
-          type:       resource_name,
-          summary:    description,
-          nickname:   "#{http_method}#{resource_name}",
-          notes:      ( notes if respond_to?(:notes) ),
-          parameters: respond_to?(:parameters) ? formatted_parameters : [],
+          method:           http_method,
+          type:             resource_name,
+          summary:          description,
+          nickname:         "#{http_method}#{resource_name}",
+          notes:            ( notes if respond_to?(:notes) ),
+          exampleResponse:  ( example_response if respond_to?(:example_response) ),
+          parameters:       respond_to?(:parameters) ? formatted_parameters : [],
           responseMessages: []
         }
       end
