@@ -15,17 +15,26 @@ module RspecApiDocumentation
         write_examples
       end
 
+      def examples_responses
+        index.examples.inject({}) do |result, example|
+          result[example.route] ||= {}
+          result[example.route][example.http_method] ||= []
+          result[example.route][example.http_method] << example.response_messages.first
+          result
+        end
+      end
+
       def write_examples
         json_examples = {}
         a = []
         index.examples.each do |example|
           unless example.mute
             a << example.route
-            json_example = JsonSwaggerExample.new(example, configuration)
+            json_example = JsonSwaggerExample.new(example, configuration, examples_responses)
             dirname = example.route.split('/').reject(&:blank?)
             FileUtils.mkdir_p(docs_dir.join(dirname[0..-2].join('/')))
             #(json_examples[docs_dir.join(dirname.join('/') << '.json')] ||= []) << JsonSwaggerExample.new(example, configuration)
-            (json_examples[docs_dir.join('v1', (example.root_path.gsub(/^\//, "") << '.json'))] ||= []) << JsonSwaggerExample.new(example, configuration)
+            (json_examples[docs_dir.join('v1', (example.root_path.gsub(/^\//, "") << '.json'))] ||= []) << JsonSwaggerExample.new(example, configuration, examples_responses)
           end
         end
 
@@ -86,10 +95,11 @@ module RspecApiDocumentation
     end
 
     class JsonSwaggerExample
-      def initialize(example, configuration)
+      def initialize(example, configuration, examples_responses=nil)
         @example = example
         @host = configuration.curl_host
         @filter_headers = configuration.curl_headers_to_filter
+        @examples_responses = examples_responses
       end
 
       def method_missing(method, *args, &block)
@@ -117,8 +127,8 @@ module RspecApiDocumentation
           nickname:         "#{http_method}#{resource_name}",
           notes:            ( notes if respond_to?(:notes) ),
           exampleResponse:  ( example_response if respond_to?(:example_response) ),
-          parameters:       respond_to?(:parameters) ? formatted_parameters : [],
-          responseMessages: []
+          parameters:       ( respond_to?(:parameters) ? formatted_parameters : [] ),
+          responseMessages: ( @examples_responses.present? ? @examples_responses[route][http_method].uniq : [] )
         }
       end
 

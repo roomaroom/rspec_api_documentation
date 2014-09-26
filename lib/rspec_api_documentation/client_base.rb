@@ -68,6 +68,10 @@ module RspecApiDocumentation
 
       metadata[:requests] ||= []
       metadata[:requests] << request_metadata
+      metadata[:example_response] = request_metadata[:response_body]
+
+      example.metadata[:response_messages] ||= []
+      example.metadata[:response_messages] << { code: request_metadata[:response_status], message: request_metadata[:response_status_text] }
     end
 
     def query_hash
