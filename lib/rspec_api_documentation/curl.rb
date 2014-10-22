@@ -16,11 +16,11 @@ module RspecApiDocumentation
     end
 
     def get
-      "curl \"#{url}#{get_data}\" -X GET #{headers}"
+      "curl \"#{url}#{get_data[:uri]}\" #{get_data[:json]} -X GET #{headers}"
     end
 
     def head
-      "curl \"#{url}#{get_data}\" -X HEAD #{headers}"
+      "curl \"#{url}#{get_data[:uri]}\" #{get_data[:json]} -X GET #{headers}"
     end
 
     def put
@@ -42,20 +42,29 @@ module RspecApiDocumentation
     def headers
       filter_headers(super).map do |k, v|
         if k =~ /authorization/i && v =~ /^Basic/
-          "\\\n\t-u #{format_auth_header(v)}"
+          " -u #{format_auth_header(v)}"
         else
-          "\\\n\t-H \"#{format_full_header(k, v)}\""
+          " -H \"#{format_full_header(k, v)}\""
         end
       end.join(" ")
     end
 
     def get_data
-      "?#{data}" unless data.blank?
+      unless data.blank?
+        formatted_data = Rack::Utils.parse_nested_query(data).with_indifferent_access
+        auth_token = formatted_data.delete('auth_token')
+        {
+          uri: "?auth_token=#{auth_token}",
+          json: "-d '#{formatted_data.to_json}'"
+        }
+      else
+        {}
+      end
     end
 
     def post_data
-      escaped_data = data.to_s.gsub("'", "\\u0027")
-      "-d '#{escaped_data}'"
+      formatted_data = Rack::Utils.parse_nested_query(data).to_json
+      "-d '#{formatted_data}'"
     end
 
     private

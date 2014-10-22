@@ -69,6 +69,13 @@ module RspecApiDocumentation
       metadata[:requests] ||= []
       metadata[:requests] << request_metadata
       metadata[:example_response] = request_metadata[:response_body]
+      if method == 'GET'
+        request_url, request_params = path.split('?')
+        path = request_url
+        request_body = request_params
+      end
+      metadata[:example_request] = Curl.new(method, path, request_body, {'Content-Type' => 'application/json'}).output("#{ENV['RAD_CULR_HOST']}/")
+      #metadata[:example_request] = RspecApiDocumentation::RequestEample.new(request_metadata).to_s
 
       example.metadata[:response_messages] ||= []
       example.metadata[:response_messages] << { code: request_metadata[:response_status], message: request_metadata[:response_status_text] }
