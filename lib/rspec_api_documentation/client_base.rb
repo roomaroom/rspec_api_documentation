@@ -68,7 +68,7 @@ module RspecApiDocumentation
 
       metadata[:requests] ||= []
       metadata[:requests] << request_metadata
-      metadata[:example_response] = request_metadata[:response_body]
+      metadata[:example_response] = JSON.pretty_generate(JSON.parse(request_metadata[:response_body]))
       if method == 'GET'
         request_url, request_params = path.split('?')
         path = request_url
