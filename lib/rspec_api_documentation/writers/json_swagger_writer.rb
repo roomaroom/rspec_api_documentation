@@ -129,7 +129,7 @@ module RspecApiDocumentation
           exampleResponse:  ( example_response if respond_to?(:example_response) ),
           parameters:       ( respond_to?(:parameters) ? formatted_parameters : [] ),
           responseMessages: ( @examples_responses.present? ? @examples_responses[route][http_method].uniq : [] ),
-          exampleRequest:  ( example_request if respond_to?(:example_request) )
+          exampleRequest:   ( example_request if respond_to?(:example_request) )
         }
       end
 
