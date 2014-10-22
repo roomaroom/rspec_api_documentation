@@ -55,7 +55,7 @@ module RspecApiDocumentation
         auth_token = formatted_data.delete('auth_token')
         {
           uri: "?auth_token=#{auth_token}",
-          json: "-d '#{formatted_data.to_json}'"
+          json: "-d '#{JSON.pretty_generate(formatted_data)}'"
         }
       else
         {}
@@ -63,7 +63,7 @@ module RspecApiDocumentation
     end
 
     def post_data
-      formatted_data = Rack::Utils.parse_nested_query(data).to_json
+      formatted_data = JSON.pretty_generate(Rack::Utils.parse_nested_query(data))
       "-d '#{formatted_data}'"
     end
 
