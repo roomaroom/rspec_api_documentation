@@ -147,7 +147,13 @@ module RspecApiDocumentation
       end
 
       def formatted_parameters
-        parameters
+        parameters.map do |parameter|
+          if parameter[:scope].present? && parameter[:scope].kind_of?(Hash)
+            parameter[:scope] = Rack::Utils.build_nested_query(parameter[:scope])
+          end
+
+          parameter
+        end
       end
     end
   end
